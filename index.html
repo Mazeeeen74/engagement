@@ -2,216 +2,498 @@
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <title>Engagement Invitation Game</title>
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Mazen & Shahd - Engagement</title>
 
     <!-- PREMIUM FONTS -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap"
       rel="stylesheet"
     />
 
     <style>
-      body {
+      :root {
+        --primary-gold: #d4af37;
+        --light-gold: #f3e5ab;
+        --rose-gold: #b76e79;
+        --dark-bg: #0a0e17;
+        --panel-bg: rgba(20, 25, 40, 0.6);
+        --text-main: #fdfbf7;
+        --text-muted: #b0b5c0;
+        --cell-size: min(8vw, 40px); /* Responsive cell size */
+      }
+
+      * {
+        box-sizing: border-box;
         margin: 0;
+        padding: 0;
+        user-select: none;
+      }
+
+      body {
         height: 100vh;
-        background: radial-gradient(circle at top, #0b1220, #070a12);
-        font-family: "Poppins", sans-serif;
-        color: #fff;
+        width: 100vw;
+        background: radial-gradient(
+          circle at center,
+          #162032 0%,
+          var(--dark-bg) 100%
+        );
+        font-family: "Montserrat", sans-serif;
+        color: var(--text-main);
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         overflow: hidden;
-        font-family: "Poppins", sans-serif;
+        position: relative;
+      }
+
+      /* Animated Background Stars/Particles */
+      .particles {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 0;
+      }
+
+      .game-container {
+        position: relative;
+        z-index: 10;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        padding: 15px;
+        transition: filter 0.8s ease;
       }
 
       /* HEADER */
-      h2 {
-        font-family: "Poppins", sans-serif;
-        font-size: 28px;
-        font-weight: 600;
-        letter-spacing: 1px;
-        margin-bottom: 6px;
-        color: #f8e7ff;
-        text-shadow: 0 0 20px rgba(255, 192, 203, 0.3);
+      .header {
+        text-align: center;
+        margin-bottom: 2vh;
+        animation: fadeInDown 1s ease;
       }
 
-      .subtitle {
-        font-size: 13px;
-        opacity: 0.7;
-        margin-bottom: 18px;
-        letter-spacing: 0.5px;
+      .header h2 {
+        font-family: "Playfair Display", serif;
+        font-size: clamp(24px, 5vw, 32px);
+        font-weight: 600;
+        color: var(--light-gold);
+        margin-bottom: 5px;
+        text-shadow: 0 0 15px rgba(212, 175, 55, 0.4);
+      }
+
+      .header p {
+        font-size: clamp(12px, 3vw, 15px);
+        color: var(--text-muted);
+        letter-spacing: 1.5px;
+        text-transform: uppercase;
       }
 
       /* MAZE CONTAINER */
+      .maze-wrapper {
+        padding: 10px;
+        border-radius: 20px;
+        background: linear-gradient(
+          135deg,
+          rgba(212, 175, 55, 0.2) 0%,
+          rgba(183, 110, 121, 0.05) 100%
+        );
+        box-shadow:
+          0 15px 35px rgba(0, 0, 0, 0.5),
+          inset 0 0 1px 1px rgba(212, 175, 55, 0.3);
+        backdrop-filter: blur(10px);
+        margin-bottom: 25px;
+        animation: zoomIn 1s ease;
+      }
+
       .maze {
         display: grid;
-        grid-template-columns: repeat(10, 48px);
-        grid-template-rows: repeat(10, 48px);
-        gap: 4px;
-
-        padding: 18px;
-        border-radius: 24px;
-
-        background: rgba(255, 255, 255, 0.04);
-        border: 1px solid rgba(255, 255, 255, 0.08);
-
-        backdrop-filter: blur(14px);
-
-        box-shadow:
-          0 20px 60px rgba(0, 0, 0, 0.6),
-          inset 0 0 30px rgba(255, 192, 203, 0.05);
+        grid-template-columns: repeat(10, var(--cell-size));
+        grid-template-rows: repeat(10, var(--cell-size));
+        gap: 3px;
+        background: var(--panel-bg);
+        padding: 10px;
+        border-radius: 15px;
       }
 
       /* CELLS */
       .cell {
-        width: 48px;
-        height: 48px;
-        border-radius: 10px;
-
+        width: var(--cell-size);
+        height: var(--cell-size);
+        border-radius: 6px;
         display: flex;
         align-items: center;
         justify-content: center;
-
-        background: rgba(255, 255, 255, 0.03);
+        background: rgba(255, 255, 255, 0.02);
+        transition: all 0.2s ease;
+        position: relative;
       }
 
       /* WALLS */
       .wall {
         background: linear-gradient(
           135deg,
-          rgba(236, 72, 153, 0.25),
-          rgba(168, 85, 247, 0.15)
+          rgba(212, 175, 55, 0.15),
+          rgba(212, 175, 55, 0.05)
         );
-        box-shadow: inset 0 0 10px rgba(236, 72, 153, 0.2);
+        box-shadow: inset 0 0 8px rgba(212, 175, 55, 0.2);
+        border: 1px solid rgba(212, 175, 55, 0.1);
       }
 
       /* IMAGES */
       .player,
       .target {
-        width: 36px;
-        height: 36px;
+        width: 125%;
+        height: 125%;
         border-radius: 50%;
         object-fit: cover;
-
-        box-shadow:
-          0 0 12px rgba(255, 255, 255, 0.25),
-          0 0 25px rgba(255, 192, 203, 0.15);
+        box-shadow: 0 0 15px rgba(212, 175, 55, 0.5);
+        border: 2px solid var(--primary-gold);
+        position: absolute;
+        z-index: 5;
       }
 
       .target {
-        border: 2px solid gold;
+        border-color: var(--rose-gold);
+        box-shadow: 0 0 20px rgba(183, 110, 121, 0.6);
+        animation: pulse 2s infinite;
       }
 
-      /* CONTROLS */
+      /* CONTROLS (D-PAD) */
       .controls {
-        margin-top: 22px;
         display: grid;
         grid-template-columns: 60px 60px 60px;
-        gap: 10px;
+        grid-template-rows: 60px 60px;
+        gap: 8px;
+        justify-content: center;
+        align-items: center;
+        animation: fadeInUp 1s ease;
       }
 
-      button {
-        font-family: "Poppins", sans-serif;
+      .controls .up {
+        grid-column: 2;
+        grid-row: 1;
+      }
+      .controls .left {
+        grid-column: 1;
+        grid-row: 2;
+      }
+      .controls .down {
+        grid-column: 2;
+        grid-row: 2;
+      }
+      .controls .right {
+        grid-column: 3;
+        grid-row: 2;
+      }
 
-        padding: 10px;
-        border: none;
+      .btn {
+        width: 100%;
+        height: 100%;
+        border: 1px solid rgba(212, 175, 55, 0.3);
         border-radius: 12px;
-
-        background: linear-gradient(135deg, #ec4899, #f97316);
-        color: white;
-        font-size: 15px;
-
+        background: linear-gradient(
+          145deg,
+          rgba(30, 40, 60, 0.8),
+          rgba(15, 20, 30, 0.9)
+        );
+        color: var(--primary-gold);
+        font-size: 24px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
         cursor: pointer;
-
-        box-shadow: 0 10px 20px rgba(236, 72, 153, 0.2);
-
-        transition: 0.2s;
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+        transition: all 0.1s ease;
+        -webkit-tap-highlight-color: transparent;
       }
 
-      button:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 15px 25px rgba(236, 72, 153, 0.3);
+      .btn:active {
+        transform: scale(0.92);
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.5);
+        background: rgba(212, 175, 55, 0.15);
       }
 
-      /* RESULT */
-      .result {
+      /* INVITATION RESULT SECTION */
+      .invitation {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(10, 14, 23, 0.85);
+        backdrop-filter: blur(8px);
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 1s ease;
+      }
+
+      .invitation.visible {
+        opacity: 1;
+        pointer-events: all;
+      }
+
+      .invite-card {
+        background: linear-gradient(
+          135deg,
+          rgba(20, 25, 40, 0.95),
+          rgba(15, 18, 25, 0.98)
+        );
+        border: 1px solid rgba(212, 175, 55, 0.4);
+        padding: 40px 30px;
+        border-radius: 20px;
         text-align: center;
-        animation: pop 0.6s ease;
+        max-width: 90%;
+        width: 400px;
+        box-shadow:
+          0 20px 50px rgba(0, 0, 0, 0.8),
+          inset 0 0 20px rgba(212, 175, 55, 0.05);
+        transform: translateY(50px) scale(0.9);
+        transition: all 1s cubic-bezier(0.175, 0.885, 0.32, 1.275);
       }
 
-      .result h1 {
-        font-family: "Playfair Display", serif;
-        font-size: 38px;
-        color: #ffd1e8;
+      .invitation.visible .invite-card {
+        transform: translateY(0) scale(1);
       }
 
-      .result p {
-        opacity: 0.8;
+      .invite-rings {
+        font-size: 45px;
+        margin-bottom: 15px;
+        animation: floatRing 3s ease-in-out infinite;
+      }
+
+      .invite-card h3 {
+        font-family: "Montserrat", sans-serif;
         font-size: 14px;
+        color: var(--rose-gold);
+        text-transform: uppercase;
+        letter-spacing: 3px;
+        margin-bottom: 10px;
       }
 
-      @keyframes pop {
+      .invite-card .names {
+        font-size: 36px;
+        color: #fff;
+        margin: 20px 0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 15px;
+      }
+
+      .invite-card .names span.name {
+        font-family: "Playfair Display", serif;
+        color: var(--light-gold);
+      }
+
+      .invite-card .names span.amp {
+        color: var(--primary-gold);
+        font-size: 24px;
+        font-weight: 300;
+      }
+
+      .invite-card p {
+        font-size: 15px;
+        color: var(--text-muted);
+        line-height: 1.6;
+        margin-bottom: 10px;
+      }
+
+      .invite-card .location {
+        margin-top: 25px;
+        padding-top: 20px;
+        border-top: 1px solid rgba(212, 175, 55, 0.2);
+        color: var(--light-gold);
+        font-weight: 500;
+      }
+
+      .invite-card .date {
+        font-size: 18px;
+        color: #fff;
+        margin-top: 10px;
+        font-weight: 600;
+        letter-spacing: 1px;
+      }
+
+      /* WALL MESSAGE TOAST */
+      .toast {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%) translateY(-20px);
+        background: rgba(183, 110, 121, 0.9);
+        color: white;
+        padding: 12px 24px;
+        border-radius: 30px;
+        font-size: 14px;
+        font-weight: 500;
+        box-shadow: 0 10px 20px rgba(183, 110, 121, 0.3);
+        opacity: 0;
+        z-index: 1000;
+        transition: all 0.3s ease;
+        pointer-events: none;
+      }
+
+      .toast.show {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+      }
+
+      /* KEYFRAMES */
+      @keyframes pulse {
         0% {
-          transform: scale(0.6);
-          opacity: 0;
+          box-shadow: 0 0 10px rgba(183, 110, 121, 0.4);
+        }
+        50% {
+          box-shadow: 0 0 25px rgba(183, 110, 121, 0.8);
         }
         100% {
-          transform: scale(1);
+          box-shadow: 0 0 10px rgba(183, 110, 121, 0.4);
+        }
+      }
+
+      @keyframes floatRing {
+        0%,
+        100% {
+          transform: translateY(0);
+        }
+        50% {
+          transform: translateY(-10px);
+        }
+      }
+
+      @keyframes fadeInDown {
+        from {
+          opacity: 0;
+          transform: translateY(-20px);
+        }
+        to {
           opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeInUp {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes zoomIn {
+        from {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        to {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      /* Falling Petals Effect */
+      .petal {
+        position: absolute;
+        background: linear-gradient(
+          135deg,
+          rgba(212, 175, 55, 0.6),
+          rgba(183, 110, 121, 0.6)
+        );
+        border-radius: 15px 0 15px 0;
+        z-index: 90;
+        pointer-events: none;
+        animation: fall linear forwards;
+      }
+
+      @keyframes fall {
+        to {
+          transform: translateY(100vh) rotate(360deg);
         }
       }
 
       .hidden {
-        display: none;
-      }
-
-      /* HEARTS */
-      .heart {
-        position: absolute;
-        color: #ff7aa2;
-        animation: float 6s linear infinite;
-        opacity: 0.6;
-        filter: drop-shadow(0 0 6px rgba(255, 122, 162, 0.4));
-      }
-
-      @keyframes float {
-        0% {
-          transform: translateY(100vh) scale(0.8);
-        }
-        100% {
-          transform: translateY(-10vh) scale(1.2);
-        }
+        display: none !important;
       }
     </style>
   </head>
 
   <body>
-    <h2>💌 Find Your Way to Her</h2>
-    <div class="subtitle">One path leads to love ❤️</div>
+    <!-- Background Particles -->
+    <div class="particles" id="particles"></div>
 
-    <div class="maze" id="maze"></div>
+    <div class="game-container" id="gameContainer">
+      <div class="header">
+        <h2>Find Your Way to Her</h2>
+        <p>One path leads to forever</p>
+      </div>
 
-    <div class="controls">
-      <div></div>
-      <button onclick="move('up')">⬆</button>
-      <div></div>
+      <div class="maze-wrapper">
+        <div class="maze" id="maze"></div>
+      </div>
 
-      <button onclick="move('left')">⬅</button>
-      <button onclick="move('down')">⬇</button>
-      <button onclick="move('right')">➡</button>
+      <div class="controls">
+        <div class="btn up" onclick="move('up')">⯅</div>
+        <div class="btn left" onclick="move('left')">⯇</div>
+        <div class="btn down" onclick="move('down')">⯆</div>
+        <div class="btn right" onclick="move('right')">⯈</div>
+      </div>
     </div>
 
-    <div id="result" class="result hidden">
-      <h1>🎉 Congrats!</h1>
-      <h3>You reached her ❤️</h3>
-      <p>📍 Engagement Location: Grand Plaza Hotel - Alexandria</p>
+    <!-- Toast for Wall hit -->
+    <div id="toast" class="toast"></div>
+
+    <!-- Final Engagement Invitation -->
+    <div class="invitation" id="invitation">
+      <div class="invite-card">
+        <div class="invite-rings">💍</div>
+        <h3>You are invited!</h3>
+        <div class="names">
+          <span class="name">Mazen</span>
+          <span class="amp">&</span>
+          <span class="name">Shahd</span>
+        </div>
+        <p>
+          We successfully found our way to each other, and we'd love for you to
+          join us as we celebrate our engagement.
+        </p>
+
+        <div class="location">
+          <a
+            href="https://www.google.com/maps/place/Plaza+Hotel+Alexandria/@31.2445278,29.9649105,17z/data=!4m9!3m8!1s0x14f5c4eab0c6dea1:0x4717131671db1915!5m2!4m1!1i2!8m2!3d31.244509!4d29.9650089!16s%2Fg%2F1vl919m7?hl=en&entry=ttu&g_ep=EgoyMDI2MDQyMi4wIKXMDSoASAFQAw%3D%3D"
+            target="_blank"
+            style="color: inherit; text-decoration: none"
+          >
+            Open Location
+          </a>
+        </div>
+        <div class="date">
+          <!-- User can customize date here -->
+          1/5/2026
+        </div>
+      </div>
     </div>
 
     <script>
       /* =========================
-   MAZE DATA (10x10)
-   ========================= */
+         MAZE DATA (10x10)
+         ========================= */
       const mazeData = [
         [0, 0, 1, 1, 1, 0, 0, 0, 1, 0],
         [1, 0, 0, 0, 1, 0, 1, 0, 1, 0],
@@ -227,66 +509,40 @@
 
       let player = { x: 0, y: 0 };
       let target = { x: 9, y: 9 };
+      let gameActive = true;
 
       const maze = document.getElementById("maze");
+      const toast = document.getElementById("toast");
+
+      let toastTimeout;
 
       /* =========================
-   WALL MESSAGES
-   ========================= */
-      const wallMessages = [
+         WALL MESSAGES
+         ========================= */
+      const wallMessagesAr = [
         "مش شايف الحيطة ولا إيه؟",
         "والله العظيم دي حيطه",
         "الحيطة دي مش هتتحرك!",
         "يا حبيبي حييطه",
-        "متكملش لعب خلاص انت مش معزوم"
+        "طريق مسدود، جرب من ناحية تانية"
       ];
+
       function showWallMessage() {
-        const msg = document.createElement("div");
-        msg.innerText =
-          wallMessages[Math.floor(Math.random() * wallMessages.length)];
+        clearTimeout(toastTimeout);
+        toast.innerText =
+          wallMessagesAr[Math.floor(Math.random() * wallMessagesAr.length)];
+        toast.classList.add("show");
 
-        msg.style.position = "fixed";
-        msg.style.top = "50%";
-        msg.style.left = "50%";
-        msg.style.transform = "translate(-50%, -50%)";
-
-        msg.style.background = "rgba(0, 0, 0, 0.85)";
-        msg.style.color = "white";
-        msg.style.padding = "18px 26px";
-        msg.style.borderRadius = "14px";
-
-        msg.style.fontSize = "18px";
-        msg.style.fontWeight = "500";
-        msg.style.textAlign = "center";
-
-        msg.style.zIndex = "99999";
-
-        // glow effect عشان يبقى premium
-        msg.style.boxShadow = "0 0 25px rgba(255,255,255,0.15)";
-
-        // fade in effect
-        msg.style.opacity = "0";
-        msg.style.transition = "0.25s ease";
-
-        document.body.appendChild(msg);
-
-        // trigger fade in
-        setTimeout(() => {
-          msg.style.opacity = "1";
-        }, 10);
-
-        // remove after 2 seconds
-        setTimeout(() => {
-          msg.style.opacity = "0";
-          setTimeout(() => msg.remove(), 250);
-        }, 2000);
+        toastTimeout = setTimeout(() => {
+          toast.classList.remove("show");
+        }, 1500);
       }
+
       /* =========================
-   DRAW MAZE
-   ========================= */
+         DRAW MAZE
+         ========================= */
       function drawMaze() {
         maze.innerHTML = "";
-
         for (let y = 0; y < 10; y++) {
           for (let x = 0; x < 10; x++) {
             let cell = document.createElement("div");
@@ -316,9 +572,11 @@
       }
 
       /* =========================
-   MOVE LOGIC
-   ========================= */
+         MOVE LOGIC
+         ========================= */
       function move(dir) {
+        if (!gameActive) return;
+
         let nx = player.x;
         let ny = player.y;
 
@@ -331,43 +589,84 @@
           if (mazeData[ny][nx] === 0) {
             player.x = nx;
             player.y = ny;
+            drawMaze();
+            checkWin();
           } else {
             showWallMessage();
           }
         }
-
-        drawMaze();
-        checkWin();
       }
 
+      // Keyboard support
+      window.addEventListener("keydown", (e) => {
+        if (e.key === "ArrowUp") move("up");
+        if (e.key === "ArrowDown") move("down");
+        if (e.key === "ArrowLeft") move("left");
+        if (e.key === "ArrowRight") move("right");
+      });
+
       /* =========================
-   WIN CONDITION
-   ========================= */
+         WIN CONDITION
+         ========================= */
       function checkWin() {
         if (player.x === target.x && player.y === target.y) {
-          document.querySelector(".maze").classList.add("hidden");
-          document.querySelector(".controls").classList.add("hidden");
-          document.getElementById("result").classList.remove("hidden");
-          spawnHearts();
+          gameActive = false;
+          setTimeout(() => {
+            document.getElementById("gameContainer").style.filter =
+              "blur(12px)";
+            document.getElementById("invitation").classList.add("visible");
+            startPetals();
+          }, 300);
         }
       }
 
       /* =========================
-   HEARTS EFFECT
-   ========================= */
-      function spawnHearts() {
-        for (let i = 0; i < 30; i++) {
-          let h = document.createElement("div");
-          h.className = "heart";
-          h.innerHTML = "❤️";
-          h.style.left = Math.random() * 100 + "vw";
-          h.style.fontSize = Math.random() * 20 + 10 + "px";
-          h.style.animationDuration = Math.random() * 3 + 4 + "s";
-          document.body.appendChild(h);
-        }
+         PETALS / CONFETTI EFFECT
+         ========================= */
+      function startPetals() {
+        const particlesContainer = document.getElementById("particles");
+
+        setInterval(() => {
+          let petal = document.createElement("div");
+          petal.className = "petal";
+
+          // Random properties
+          let size = Math.random() * 10 + 5;
+          let left = Math.random() * 100;
+          let duration = Math.random() * 3 + 3;
+
+          petal.style.width = size + "px";
+          petal.style.height = size + "px";
+          petal.style.left = left + "vw";
+          petal.style.top = "-20px";
+          petal.style.animationDuration = duration + "s";
+
+          particlesContainer.appendChild(petal);
+
+          // Clean up
+          setTimeout(() => {
+            petal.remove();
+          }, duration * 1000);
+        }, 300);
       }
 
+      // Initial Draw
       drawMaze();
+
+      // Create some initial background stars
+      const particlesContainer = document.getElementById("particles");
+      for (let i = 0; i < 40; i++) {
+        let star = document.createElement("div");
+        star.style.position = "absolute";
+        star.style.left = Math.random() * 100 + "vw";
+        star.style.top = Math.random() * 100 + "vh";
+        star.style.width = Math.random() * 2 + "px";
+        star.style.height = star.style.width;
+        star.style.background =
+          "rgba(255,255,255," + (Math.random() * 0.5 + 0.1) + ")";
+        star.style.borderRadius = "50%";
+        particlesContainer.appendChild(star);
+      }
     </script>
   </body>
 </html>
