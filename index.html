@@ -331,25 +331,29 @@
       /* WALL MESSAGE TOAST */
       .toast {
         position: fixed;
-        top: 20px;
+        top: 50%;
         left: 50%;
-        transform: translateX(-50%) translateY(-20px);
-        background: rgba(183, 110, 121, 0.9);
+        transform: translate(-50%, -50%) scale(0.8);
+        background: rgba(15, 20, 30, 0.95);
         color: white;
-        padding: 12px 24px;
-        border-radius: 30px;
-        font-size: 14px;
-        font-weight: 500;
-        box-shadow: 0 10px 20px rgba(183, 110, 121, 0.3);
+        padding: 20px 40px;
+        border-radius: 16px;
+        font-size: 24px;
+        font-weight: 600;
+        text-align: center;
+        border: 1px solid rgba(212, 175, 55, 0.4);
+        box-shadow:
+          0 20px 40px rgba(0, 0, 0, 0.8),
+          0 0 20px rgba(183, 110, 121, 0.3);
         opacity: 0;
         z-index: 1000;
-        transition: all 0.3s ease;
+        transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
         pointer-events: none;
       }
 
       .toast.show {
         opacity: 1;
-        transform: translateX(-50%) translateY(0);
+        transform: translate(-50%, -50%) scale(1);
       }
 
       /* KEYFRAMES */
@@ -524,14 +528,21 @@
         "والله العظيم دي حيطه",
         "الحيطة دي مش هتتحرك!",
         "يا حبيبي حييطه",
-        "طريق مسدود، جرب من ناحية تانية"
+        "شكلك غبي و متعب",
+        "بقولك ايه اقفل اللينك و متجيش الخطوبه"
       ];
 
+      let currentMsgIndex = 0;
       function showWallMessage() {
         clearTimeout(toastTimeout);
-        toast.innerText =
-          wallMessagesAr[Math.floor(Math.random() * wallMessagesAr.length)];
+
+        toast.innerText = wallMessagesAr[currentMsgIndex];
         toast.classList.add("show");
+
+        currentMsgIndex++;
+        if (currentMsgIndex >= wallMessagesAr.length) {
+          currentMsgIndex = 0;
+        }
 
         toastTimeout = setTimeout(() => {
           toast.classList.remove("show");
