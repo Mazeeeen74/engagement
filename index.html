@@ -1,0 +1,373 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Engagement Invitation Game</title>
+
+    <!-- PREMIUM FONTS -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600;700&family=Poppins:wght@300;400;500&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      body {
+        margin: 0;
+        height: 100vh;
+        background: radial-gradient(circle at top, #0b1220, #070a12);
+        font-family: "Poppins", sans-serif;
+        color: #fff;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        font-family: "Poppins", sans-serif;
+      }
+
+      /* HEADER */
+      h2 {
+        font-family: "Poppins", sans-serif;
+        font-size: 28px;
+        font-weight: 600;
+        letter-spacing: 1px;
+        margin-bottom: 6px;
+        color: #f8e7ff;
+        text-shadow: 0 0 20px rgba(255, 192, 203, 0.3);
+      }
+
+      .subtitle {
+        font-size: 13px;
+        opacity: 0.7;
+        margin-bottom: 18px;
+        letter-spacing: 0.5px;
+      }
+
+      /* MAZE CONTAINER */
+      .maze {
+        display: grid;
+        grid-template-columns: repeat(10, 48px);
+        grid-template-rows: repeat(10, 48px);
+        gap: 4px;
+
+        padding: 18px;
+        border-radius: 24px;
+
+        background: rgba(255, 255, 255, 0.04);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+
+        backdrop-filter: blur(14px);
+
+        box-shadow:
+          0 20px 60px rgba(0, 0, 0, 0.6),
+          inset 0 0 30px rgba(255, 192, 203, 0.05);
+      }
+
+      /* CELLS */
+      .cell {
+        width: 48px;
+        height: 48px;
+        border-radius: 10px;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        background: rgba(255, 255, 255, 0.03);
+      }
+
+      /* WALLS */
+      .wall {
+        background: linear-gradient(
+          135deg,
+          rgba(236, 72, 153, 0.25),
+          rgba(168, 85, 247, 0.15)
+        );
+        box-shadow: inset 0 0 10px rgba(236, 72, 153, 0.2);
+      }
+
+      /* IMAGES */
+      .player,
+      .target {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        object-fit: cover;
+
+        box-shadow:
+          0 0 12px rgba(255, 255, 255, 0.25),
+          0 0 25px rgba(255, 192, 203, 0.15);
+      }
+
+      .target {
+        border: 2px solid gold;
+      }
+
+      /* CONTROLS */
+      .controls {
+        margin-top: 22px;
+        display: grid;
+        grid-template-columns: 60px 60px 60px;
+        gap: 10px;
+      }
+
+      button {
+        font-family: "Poppins", sans-serif;
+
+        padding: 10px;
+        border: none;
+        border-radius: 12px;
+
+        background: linear-gradient(135deg, #ec4899, #f97316);
+        color: white;
+        font-size: 15px;
+
+        cursor: pointer;
+
+        box-shadow: 0 10px 20px rgba(236, 72, 153, 0.2);
+
+        transition: 0.2s;
+      }
+
+      button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 25px rgba(236, 72, 153, 0.3);
+      }
+
+      /* RESULT */
+      .result {
+        text-align: center;
+        animation: pop 0.6s ease;
+      }
+
+      .result h1 {
+        font-family: "Playfair Display", serif;
+        font-size: 38px;
+        color: #ffd1e8;
+      }
+
+      .result p {
+        opacity: 0.8;
+        font-size: 14px;
+      }
+
+      @keyframes pop {
+        0% {
+          transform: scale(0.6);
+          opacity: 0;
+        }
+        100% {
+          transform: scale(1);
+          opacity: 1;
+        }
+      }
+
+      .hidden {
+        display: none;
+      }
+
+      /* HEARTS */
+      .heart {
+        position: absolute;
+        color: #ff7aa2;
+        animation: float 6s linear infinite;
+        opacity: 0.6;
+        filter: drop-shadow(0 0 6px rgba(255, 122, 162, 0.4));
+      }
+
+      @keyframes float {
+        0% {
+          transform: translateY(100vh) scale(0.8);
+        }
+        100% {
+          transform: translateY(-10vh) scale(1.2);
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <h2>💌 Find Your Way to Her</h2>
+    <div class="subtitle">One path leads to love ❤️</div>
+
+    <div class="maze" id="maze"></div>
+
+    <div class="controls">
+      <div></div>
+      <button onclick="move('up')">⬆</button>
+      <div></div>
+
+      <button onclick="move('left')">⬅</button>
+      <button onclick="move('down')">⬇</button>
+      <button onclick="move('right')">➡</button>
+    </div>
+
+    <div id="result" class="result hidden">
+      <h1>🎉 Congrats!</h1>
+      <h3>You reached her ❤️</h3>
+      <p>📍 Engagement Location: Grand Plaza Hotel - Alexandria</p>
+    </div>
+
+    <script>
+      /* =========================
+   MAZE DATA (10x10)
+   ========================= */
+      const mazeData = [
+        [0, 0, 1, 1, 1, 0, 0, 0, 1, 0],
+        [1, 0, 0, 0, 1, 0, 1, 0, 1, 0],
+        [1, 1, 1, 0, 1, 0, 1, 0, 0, 0],
+        [0, 0, 1, 0, 0, 0, 1, 1, 1, 0],
+        [0, 1, 1, 1, 1, 0, 0, 0, 1, 0],
+        [0, 0, 0, 0, 1, 1, 1, 0, 1, 0],
+        [1, 1, 1, 0, 0, 0, 1, 0, 0, 0],
+        [0, 0, 1, 0, 1, 0, 1, 1, 1, 0],
+        [0, 0, 0, 0, 1, 0, 0, 0, 0, 0],
+        [1, 1, 1, 0, 0, 0, 1, 1, 1, 0]
+      ];
+
+      let player = { x: 0, y: 0 };
+      let target = { x: 9, y: 9 };
+
+      const maze = document.getElementById("maze");
+
+      /* =========================
+   WALL MESSAGES
+   ========================= */
+      const wallMessages = [
+        "مش شايف الحيطة ولا إيه؟",
+        "والله العظيم دي حيطه",
+        "الحيطة دي مش هتتحرك!",
+        "يا حبيبي حييطه",
+        "متكملش لعب خلاص انت مش معزوم"
+      ];
+      function showWallMessage() {
+        const msg = document.createElement("div");
+        msg.innerText =
+          wallMessages[Math.floor(Math.random() * wallMessages.length)];
+
+        msg.style.position = "fixed";
+        msg.style.top = "50%";
+        msg.style.left = "50%";
+        msg.style.transform = "translate(-50%, -50%)";
+
+        msg.style.background = "rgba(0, 0, 0, 0.85)";
+        msg.style.color = "white";
+        msg.style.padding = "18px 26px";
+        msg.style.borderRadius = "14px";
+
+        msg.style.fontSize = "18px";
+        msg.style.fontWeight = "500";
+        msg.style.textAlign = "center";
+
+        msg.style.zIndex = "99999";
+
+        // glow effect عشان يبقى premium
+        msg.style.boxShadow = "0 0 25px rgba(255,255,255,0.15)";
+
+        // fade in effect
+        msg.style.opacity = "0";
+        msg.style.transition = "0.25s ease";
+
+        document.body.appendChild(msg);
+
+        // trigger fade in
+        setTimeout(() => {
+          msg.style.opacity = "1";
+        }, 10);
+
+        // remove after 2 seconds
+        setTimeout(() => {
+          msg.style.opacity = "0";
+          setTimeout(() => msg.remove(), 250);
+        }, 2000);
+      }
+      /* =========================
+   DRAW MAZE
+   ========================= */
+      function drawMaze() {
+        maze.innerHTML = "";
+
+        for (let y = 0; y < 10; y++) {
+          for (let x = 0; x < 10; x++) {
+            let cell = document.createElement("div");
+            cell.className = "cell";
+
+            if (mazeData[y][x] === 1) {
+              cell.classList.add("wall");
+            }
+
+            if (player.x === x && player.y === y) {
+              let img = document.createElement("img");
+              img.src = "me.jpg";
+              img.className = "player";
+              cell.appendChild(img);
+            }
+
+            if (target.x === x && target.y === y) {
+              let img = document.createElement("img");
+              img.src = "her.jpg";
+              img.className = "target";
+              cell.appendChild(img);
+            }
+
+            maze.appendChild(cell);
+          }
+        }
+      }
+
+      /* =========================
+   MOVE LOGIC
+   ========================= */
+      function move(dir) {
+        let nx = player.x;
+        let ny = player.y;
+
+        if (dir === "up") ny--;
+        if (dir === "down") ny++;
+        if (dir === "left") nx--;
+        if (dir === "right") nx++;
+
+        if (nx >= 0 && nx < 10 && ny >= 0 && ny < 10) {
+          if (mazeData[ny][nx] === 0) {
+            player.x = nx;
+            player.y = ny;
+          } else {
+            showWallMessage();
+          }
+        }
+
+        drawMaze();
+        checkWin();
+      }
+
+      /* =========================
+   WIN CONDITION
+   ========================= */
+      function checkWin() {
+        if (player.x === target.x && player.y === target.y) {
+          document.querySelector(".maze").classList.add("hidden");
+          document.querySelector(".controls").classList.add("hidden");
+          document.getElementById("result").classList.remove("hidden");
+          spawnHearts();
+        }
+      }
+
+      /* =========================
+   HEARTS EFFECT
+   ========================= */
+      function spawnHearts() {
+        for (let i = 0; i < 30; i++) {
+          let h = document.createElement("div");
+          h.className = "heart";
+          h.innerHTML = "❤️";
+          h.style.left = Math.random() * 100 + "vw";
+          h.style.fontSize = Math.random() * 20 + 10 + "px";
+          h.style.animationDuration = Math.random() * 3 + 4 + "s";
+          document.body.appendChild(h);
+        }
+      }
+
+      drawMaze();
+    </script>
+  </body>
+</html>
